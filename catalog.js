@@ -1,0 +1,14 @@
+/* Ten demonstration products and private, store-use EAN-13 barcodes.
+   Prices are illustrative CHF shelf prices, not live Migros prices. */
+window.WATCHSAVE_PRODUCTS = [
+  { id:'milk',     name:'M-Classic Vollmilch',         detail:'UHT · 1 Liter',          price:1.65,  emoji:'🥛', tint:'#d9ecfa', category:'Milchprodukte',  code:'2900000000018' },
+  { id:'bananas',  name:'Bananen',                     detail:'1 kg · gewogenes Paket',price:2.95,  emoji:'🍌', tint:'#fff0bc', category:'Früchte',       code:'2900000000025' },
+  { id:'eggs',     name:'Freiland-Eier',               detail:'10 Stück',              price:5.25,  emoji:'🥚', tint:'#f7e8cc', category:'Milchprodukte',  code:'2900000000032' },
+  { id:'pasta',    name:'M-Classic Spaghetti',         detail:'500 g',                 price:1.90,  emoji:'🍝', tint:'#ffe7bf', category:'Vorrat',        code:'2900000000049' },
+  { id:'butter',   name:'M-Classic Butter',            detail:'250 g',                 price:4.20,  emoji:'🧈', tint:'#fff0b8', category:'Milchprodukte',  code:'2900000000056' },
+  { id:'yogurt',   name:'Joghurt Nature',              detail:'180 g',                 price:0.75,  emoji:'🥣', tint:'#e9e1f4', category:'Milchprodukte',  code:'2900000000063' },
+  { id:'choco',    name:'Milchschokolade',             detail:'100 g',                 price:1.70,  emoji:'🍫', tint:'#e8d1ba', category:'Snacks',        code:'2900000000070' },
+  { id:'bread',    name:'Toastbrot',                   detail:'500 g',                 price:2.70,  emoji:'🍞', tint:'#f8d9b6', category:'Backwaren',     code:'2900000000087' },
+  { id:'juice',    name:'Orangensaft',                 detail:'1 Liter',               price:2.95,  emoji:'🧃', tint:'#ffe0ba', category:'Getränke',      code:'2900000000094' },
+  { id:'coffee',   name:'Kaffeebohnen',                detail:'500 g',                 price:11.95, emoji:'☕', tint:'#e9ded4', category:'Vorrat',        code:'2900000000100' }
+];

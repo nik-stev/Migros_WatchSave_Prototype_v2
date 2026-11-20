@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f36f21">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Migros Watch & Save — Subito Demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="catalog.js" defer></script>
+  <script src="barcodes.js" defer></script>
+  <script src="vendor/qr-code.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<div class="app-shell" id="appShell">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand"><span class="migros-mark">M</span><div><strong>Migros</strong><small>Subito self-checkout</small></div></div>
+      <div class="header-meta"><span class="station-dot"></span> Station 04 <span class="header-separator">·</span> Zürich <span class="demo-tag">STUDENT DEMO</span></div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="progress-wrap" id="progressWrap"><div class="progress-label"><span id="stepLabel">01 / 05 · Shopping</span><span>WATCH <b>&</b> SAVE</span></div><div class="step-track"><span class="step-active" id="stepFill"></span></div></div>
+
+    <!-- SCREEN 1: SHOPPING -->
+    <section class="screen" id="page-shopping" aria-labelledby="shopTitle">
+      <div class="section-heading"><div><span class="eyebrow">STEP 01 · SELF-CHECKOUT</span><h1 id="shopTitle">Scan your groceries.</h1><p>Scan one of the demo barcodes, enter a code, or tap a product below.</p></div><button type="button" class="quiet-button" id="startOverTop" title="Clear the transaction">↻ New transaction</button></div>
+      <div class="shop-grid">
+        <div class="shop-left">
+          <div class="card scanner-card">
+            <div class="card-heading"><div class="section-icon">▤</div><div><h2>Scan a product</h2><p>Use the camera or a demo EAN-13 barcode.</p></div></div>
+            <div class="scan-actions">
+              <button class="button button-dark" id="openCamera" type="button"><span aria-hidden="true">▣</span> Scan with camera</button>
+              <form class="manual-entry" id="barcodeForm"><label class="sr-only" for="barcodeInput">Barcode number</label><input inputmode="numeric" autocomplete="off" type="text" pattern="[0-9]*" maxlength="13" id="barcodeInput" placeholder="Enter 13-digit barcode"><button class="button button-secondary" type="submit">Add</button></form>
+            </div>
+            <div class="camera-panel hidden" id="cameraPanel"><div class="camera-header"><strong>Camera barcode scanner</strong><button type="button" id="closeCamera" class="text-button">Close ✕</button></div><div id="reader"></div><p id="cameraStatus" role="status" class="micro-text">Point the rear camera at a printed demo barcode.</p></div>
+            <p class="micro-text">Only these 10 demo barcodes are recognised. <a href="barcode-sheet.html" target="_blank" rel="noopener">Open printable barcode labels ↗</a></p>
+          </div>
+          <div class="card products-card"><div class="catalog-head"><div><h2>Quick-select products</h2><p>Tap to add · tap again for another item</p></div><span class="catalog-count">10 products</span></div><div class="product-grid" id="productGrid"></div></div>
+        </div>
+        <aside class="card basket-card"><div class="basket-head"><div><span class="eyebrow">YOUR PURCHASE</span><h2>Shopping basket</h2></div><div class="basket-count" id="basketCount">0</div></div><div id="basketItems" class="basket-items"><div class="empty-cart"><div class="empty-icon">🛍️</div><strong>Your basket is empty</strong><span>Scan or select a product to begin.</span></div></div><div class="basket-bottom"><div class="total-line"><span>Subtotal</span><strong id="basketSubtotal">CHF 0.00</strong></div><p class="small-note">Illustrative Swiss prices · no real payment</p><button type="button" class="button button-primary button-block" id="checkoutButton" disabled>Finish scanning <span>→</span></button></div></aside>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: OFFER -->
+    <section class="screen hidden" id="page-offer" aria-labelledby="offerTitle">
+      <div class="stage-layout"><div class="card feature-card">
+        <div class="eyebrow orange">STEP 02 · A LITTLE EXTRA FOR YOU</div>
+        <div class="feature-illustration"><div class="play-symbol">▶</div><div class="feature-floating"><span>WATCH</span><strong>&amp; SAVE</strong></div><span class="savings-spark spark-a">✦</span><span class="savings-spark spark-b">✧</span></div>
+        <h1 id="offerTitle">Would you watch an ad<br>to save on your shop?</h1>
+        <p class="stage-copy">An optional sponsored video earns you a discount on this basket. You decide how much time to spend — and you can always skip.</p>
+        <div class="choice-points"><span>✓ Choose 30 or 60 seconds</span><span>✓ Save now or get a double-value coupon</span><span>✓ No ad? No problem.</span></div>
+        <div class="stage-actions"><button type="button" class="button button-primary big" id="offerYes">Yes, show my options <span>→</span></button><button type="button" class="button button-outline big" id="offerNo">No thanks, pay normally</button></div>
+        <button type="button" class="back-link" id="offerBack">← Back to basket</button>
+      </div><aside class="card review-card" id="reviewOffer"></aside></div>
+    </section>
+
+    <!-- SCREEN 3: VIDEO LENGTH -->
+    <section class="screen hidden" id="page-duration" aria-labelledby="durationTitle">
+      <div class="section-heading"><div><span class="eyebrow">STEP 03 · CHOOSE YOUR TIME</span><h1 id="durationTitle">How long would you like to watch?</h1><p>Your discount is calculated from your current shopping basket.</p></div></div>
+      <div class="duration-grid">
+        <button type="button" class="card duration-card" data-length="short"><div class="duration-header"><span class="duration-symbol">▶</span><span class="duration-pill">SHORT VIDEO</span></div><div class="duration-big">30 <small>sec</small></div><h2>Quick break</h2><div class="duration-rate">0.5% <span>discount</span></div><p>Save up to CHF 5.00 on this purchase.</p><div class="duration-economics"><span>Save today</span><strong id="previewShortNow">CHF 0.00</strong><span>Or future coupon</span><strong id="previewShortFuture">CHF 0.00</strong></div><div class="pick-cta">Watch 30-sec video <span>→</span></div></button>
+        <button type="button" class="card duration-card promoted" data-length="long"><div class="duration-header"><span class="duration-symbol">▶</span><span class="duration-pill orange-pill">DOUBLE THE RATE</span></div><div class="duration-big">60 <small>sec</small></div><h2>More time, more savings</h2><div class="duration-rate">1% <span>discount</span></div><p>Save up to CHF 10.00 on this purchase.</p><div class="duration-economics"><span>Save today</span><strong id="previewLongNow">CHF 0.00</strong><span>Or future coupon</span><strong id="previewLongFuture">CHF 0.00</strong></div><div class="pick-cta">Watch 60-sec video <span>→</span></div></button>
+      </div><div class="below-actions"><button class="back-link" type="button" id="durationBack">← Back</button><button class="text-button" type="button" id="durationSkip">Skip &amp; pay normally →</button></div>
+    </section>
+
+    <!-- SCREEN 4: PLAY VIDEO -->
+    <section class="screen hidden" id="page-video" aria-labelledby="videoTitle">
+      <div class="stage-layout video-stage"><div class="card video-card"><div class="eyebrow orange">SPONSORED · OPTIONAL ADVERTISEMENT</div><h1 id="videoTitle">Your ad is ready.</h1><p>Watch until the end to unlock your reward.</p><div class="video-frame" id="videoFrame"><video id="adVideo" preload="metadata" playsinline webkit-playsinline disablepictureinpicture controlslist="nodownload noplaybackrate nofullscreen"><source id="adSource" src="short.mp4" type="video/mp4">Your browser cannot play this video.</video><div id="videoStartOverlay" class="video-overlay"><div class="video-overlay-logo">M <span>WATCH &amp; SAVE</span></div><button type="button" id="playVideo" class="button button-primary big">▶ Start video</button><p id="videoOverlayMessage">Tap to start your video.</p></div><div id="fallbackVideo" class="video-fallback hidden"><div class="fallback-mark">M</div><strong>WATCH &amp; SAVE</strong><span>Sponsored experience · presentation fallback</span><div class="fallback-orb"></div></div></div><div class="playback-progress"><div class="playback-bar"><span id="videoProgressBar"></span></div><div class="playback-meta"><span id="videoProgressText">00:00 / 00:30</span><span id="videoRewardText">Reward: CHF 0.00</span></div></div><div id="missingVideo" class="notice warning hidden">The video file could not be opened. Make sure <b id="missingFilename">short.mp4</b> is next to index.html, or use the timed simulation.</div><div class="video-actions"><button type="button" class="button button-outline" id="skipVideo">Skip ad &amp; pay without reward</button><button type="button" class="button button-secondary hidden" id="simulateVideo">▶ Run timed demo instead</button><button type="button" class="button button-secondary hidden" id="presenterFinish">Presenter: finish now</button></div></div><aside class="card review-card" id="reviewVideo"></aside></div>
+    </section>
+
+    <!-- SCREEN 5: REWARD ROUTE -->
+    <section class="screen hidden" id="page-reward" aria-labelledby="rewardTitle"><div class="section-heading"><div><span class="eyebrow orange">AD COMPLETED · REWARD UNLOCKED</span><h1 id="rewardTitle">Nice! How would you like to save?</h1><p>Choose one reward option. Your discount or coupon will appear on the checkout summary.</p></div></div>
+      <div class="reward-grid"><button class="card reward-card" id="rewardNow" type="button"><span class="reward-icon">🛒</span><span class="reward-kicker">SAVE ON THIS BASKET</span><strong class="reward-amount" id="rewardNowAmount">CHF 0.00</strong><h2>Apply discount now</h2><p>We deduct your reward from today's amount before payment.</p><span class="reward-cta">Apply now <span>→</span></span></button>
+      <button class="card reward-card featured" id="rewardCoupon" type="button"><span class="reward-ribbon">2× THE VALUE</span><span class="reward-icon">🎟️</span><span class="reward-kicker">SAVE ON A FUTURE VISIT</span><strong class="reward-amount" id="rewardCouponAmount">CHF 0.00</strong><h2>Get a double-value coupon</h2><p>Keep a digital or printed demo voucher for your next Migros visit.</p><span class="reward-cta">Choose future coupon <span>→</span></span></button></div><div class="below-actions"><span class="small-note">Illustrative voucher · not redeemable at real Migros shops</span></div>
+    </section>
+
+    <!-- SCREEN 6: FINAL SUMMARY -->
+    <section class="screen hidden" id="page-summary" aria-labelledby="summaryTitle"><div class="summary-layout"><div class="card receipt-card"><div class="receipt-top"><span class="eyebrow">YOUR CHECKOUT</span><span class="receipt-check" aria-hidden="true">✓</span></div><h1 id="summaryTitle">Ready to pay.</h1><p id="summaryIntro">Review your basket and proceed to a simulated payment.</p><div id="summaryLines" class="summary-lines"></div><div class="receipt-divider"></div><div class="receipt-row"><span>Subtotal</span><strong id="summarySubtotal">CHF 0.00</strong></div><div class="receipt-row savings-row hidden" id="summarySavingsRow"><span>Watch &amp; Save discount</span><strong id="summarySavings">− CHF 0.00</strong></div><div class="receipt-row grand-total"><span>TOTAL TO PAY</span><strong id="summaryTotal">CHF 0.00</strong></div><div class="summary-choice" id="summaryChoice"></div><button type="button" class="button button-primary button-block big" id="payButton">Pay <span id="payAmount">CHF 0.00</span> <span>→</span></button><button type="button" class="back-link center" id="summaryReset">↻ Start a new transaction</button></div><aside class="summary-side"><div class="card info-card"><div class="info-icon">ⓘ</div><h2>A real checkout feel.<br>A demo payment.</h2><p>This student prototype simulates Subito, advertisements and rewards. No actual payment, Cumulus credit or Migros voucher is created.</p></div><div class="card info-card soft"><span class="eyebrow">WATCH &amp; SAVE</span><h2>Time for value. Your choice.</h2><p>Skipping is always free. Sponsored messages are voluntary and the reward is displayed transparently.</p></div></aside></div></section>
+
+    <!-- SCREEN 7: PAYMENT CONFIRMATION -->
+    <section class="screen hidden" id="page-paid"><div class="card paid-card"><div class="paid-icon">✓</div><span class="eyebrow orange">DEMO PAYMENT COMPLETED</span><h1>Thank you for shopping!</h1><p id="paidDescription">Your fictional payment has been completed.</p><div class="paid-total" id="paidTotal">CHF 0.00</div><button type="button" class="button button-secondary big hidden" id="paidCouponButton">🎟️ View your coupon</button><button type="button" class="button button-primary big" id="paidReset">Start another purchase →</button><p class="small-note">No money was charged. This was a presentation simulation.</p></div></section>
+  </main>
+  <footer class="footer"><span>Migros Watch &amp; Save · University of Zurich · Digital Business Innovation</span><span>Independent academic concept — not an official Migros product</span></footer>
+</div>
+
+<!-- COUPON MODAL ON KIOSK -->
+<div id="couponModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="couponModalTitle"><div class="modal-backdrop" id="couponBackdrop"></div><div class="coupon-modal-card"><button type="button" id="closeCoupon" class="modal-close" aria-label="Close coupon">✕</button><div class="coupon-print-zone" id="couponPrintArea"><div class="coupon-header"><span class="coupon-mark">M</span><div><strong>WATCH &amp; SAVE</strong><small>FUTURE SAVINGS · DEMO COUPON</small></div></div><div class="coupon-heading">Your next-shop coupon</div><div class="coupon-value" id="couponDisplayValue">CHF 0.00</div><p class="coupon-message">Bring this coupon on your next visit.<br>For demonstration purposes only.</p><div class="qr-holder" id="couponQr"></div><div class="coupon-code" id="couponDisplayCode">WS-DEMO-000000</div><div class="coupon-terms">Not issued or accepted by Migros · Not cashable · For course demonstrations only</div></div><div class="coupon-controls"><button type="button" class="button button-primary" id="printCoupon">⎙ Print coupon</button></div><p class="coupon-help" id="couponHelp">Scan this QR with a phone. The QR contains a demonstration coupon, not a real redemption code.</p></div></div>
+
+<!-- MOBILE COUPON VIEW (when QR link opened on a hosted version) -->
+<div class="phone-coupon hidden" id="phoneCoupon"><div class="phone-coupon-content"><div class="phone-brand"><span class="migros-mark">M</span> WATCH &amp; SAVE</div><p class="eyebrow">DIGITAL DEMO COUPON</p><h1>Your future saving</h1><strong class="phone-amount" id="phoneCouponAmount">CHF 0.00</strong><div class="phone-qr" id="phoneCouponQr"></div><p class="coupon-code" id="phoneCouponCode">WS-DEMO-000000</p><p>Student concept only. This is not a coupon issued by Migros and cannot be redeemed in stores.</p></div></div>
+<div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
