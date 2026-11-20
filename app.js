@@ -377,7 +377,7 @@
         verbose: false,
       });
       await scanner.start(
-        { facingMode: "user" },
+        { facingMode: { exact: "user" } },
         {
           fps: 12,
           qrbox: (w, h) => ({
