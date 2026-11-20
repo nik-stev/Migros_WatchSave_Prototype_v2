@@ -371,16 +371,6 @@
     document.body.style.overflow = 'hidden';
   }
   function closeCoupon() { $('couponModal').classList.add('hidden'); document.body.style.overflow = ''; }
-  function downloadCoupon() {
-    if(!hasCoupon()) return;
-    const qr = qrSVG(couponPayload(), 270).replace('width="270" height="270"','x="115" y="330" width="270" height="270"');
-    const safeCode = coupon.code.replace(/[^A-Z0-9-]/g,'');
-    const image = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 720" width="500" height="720"><rect width="500" height="720" fill="#fffaf5"/><rect x="22" y="22" width="456" height="676" fill="none" stroke="#f36f21" stroke-width="3" stroke-dasharray="10 8"/><text x="250" y="105" font-family="Arial" font-size="30" text-anchor="middle" font-weight="900" fill="#17334d">WATCH &amp; SAVE</text><text x="250" y="155" font-family="Arial" font-size="17" text-anchor="middle" fill="#596b7a">FUTURE DEMO COUPON</text><text x="250" y="265" font-family="Arial" font-size="65" text-anchor="middle" font-weight="900" fill="#d85610">${money(coupon.amountCents)}</text>${qr}<text x="250" y="640" font-family="Arial" font-size="20" text-anchor="middle" font-weight="700" fill="#17334d">${safeCode}</text><text x="250" y="669" font-family="Arial" font-size="11" text-anchor="middle" fill="#8a9aa5">ACADEMIC DEMO • NOT REDEEMABLE</text></svg>`;
-    const blob = new Blob([image], {type:'image/svg+xml;charset=utf-8'});
-    const url = URL.createObjectURL(blob); const link = document.createElement('a');
-    link.href = url; link.download = `watch-save-${safeCode}.svg`; link.click();
-    setTimeout(() => URL.revokeObjectURL(url),1000);
-  }
   function reset() {
     closeCoupon(); stopPlayback(); stopScanner();
     basket.clear(); selectedLength = null; rewardChoice = 'skip'; unlocked = false; coupon = null; soundEnabled = true;
@@ -416,7 +406,6 @@
   $('couponBackdrop').addEventListener('click', closeCoupon);
   $('closeCoupon').addEventListener('click', closeCoupon);
   $('printCoupon').addEventListener('click', () => window.print());
-  $('downloadCoupon').addEventListener('click', downloadCoupon);
   document.addEventListener('keydown', event => { if(event.key === 'Escape' && !$('couponModal').classList.contains('hidden'))closeCoupon(); });
   drawCatalog(); renderBasket(); go('shopping');
 })();
