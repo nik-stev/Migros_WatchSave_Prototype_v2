@@ -78,8 +78,8 @@
     return `<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="QR code for demo voucher" viewBox="0 0 ${total} ${total}" width="${size}" height="${size}" shape-rendering="crispEdges"><rect width="${total}" height="${total}" fill="#fff"/><g fill="#172e41">${bits}</g></svg>`;
   }
 
-  function downloadPhoneCoupon() {
-    const params = new URLSearchParams(location.search);
+  async function downloadPhoneCoupon() {
+    const params = new URLSearchParams(window.location.search);
     const code = params.get("coupon");
     const amount = Number(params.get("amount"));
 
@@ -91,70 +91,103 @@
     )
       return;
 
-    const qr = qrSVG(
-      `WATCHSAVE DEMO | ${code} | CHF ${amount.toFixed(
-        2
-      )} | NOT VALID IN STORES`,
-      260
-    );
+    if (!window.jspdf) {
+      alert(
+        "PDF generator unavailable. Please check your internet connection."
+      );
+      return;
+    }
 
-    const image = `
-      <svg xmlns="http://www.w3.org/2000/svg"
-           width="500" height="720" viewBox="0 0 500 720">
-  
-        <rect width="500" height="720" fill="#fffaf5"/>
-  
-        <text x="250" y="90" text-anchor="middle"
-              font-family="Arial" font-size="32"
-              font-weight="bold" fill="#17334d">
-          WATCH &amp; SAVE
-        </text>
-  
-        <text x="250" y="145" text-anchor="middle"
-              font-family="Arial" font-size="17"
-              fill="#596b7a">
-          FUTURE DEMO COUPON
-        </text>
-  
-        <text x="250" y="250" text-anchor="middle"
-              font-family="Arial" font-size="58"
-              font-weight="bold" fill="#d85610">
-          CHF ${amount.toFixed(2)}
-        </text>
-  
-        <svg x="120" y="305" width="260" height="260"
-             viewBox="0 0 260 260">
-          ${qr.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "")}
-        </svg>
-  
-        <text x="250" y="615" text-anchor="middle"
-              font-family="Arial" font-size="19"
-              fill="#17334d">
-          ${code}
-        </text>
-  
-        <text x="250" y="660" text-anchor="middle"
-              font-family="Arial" font-size="12"
-              fill="#8a9aa5">
-          ACADEMIC DEMO - NOT REDEEMABLE
-        </text>
-      </svg>
-    `;
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
 
-    const blob = new Blob([image], {
+    // Coupon background and border
+    pdf.setFillColor(255, 250, 245);
+    pdf.roundedRect(35, 35, 140, 225, 5, 5, "F");
+
+    pdf.setDrawColor(243, 111, 33);
+    pdf.setLineWidth(0.6);
+    pdf.roundedRect(40, 40, 130, 215, 4, 4, "S");
+
+    // Header
+    pdf.setTextColor(23, 51, 77);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(23);
+    pdf.text("WATCH & SAVE", 105, 65, { align: "center" });
+
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(110, 128, 144);
+    pdf.text("FUTURE DEMO COUPON", 105, 78, {
+      align: "center",
+    });
+
+    // Discount value
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(38);
+    pdf.setTextColor(216, 86, 16);
+    pdf.text(`CHF ${amount.toFixed(2)}`, 105, 107, {
+      align: "center",
+    });
+
+    // Generate a sharp QR code with the coupon URL
+    const qr = qrSVG(window.location.href, 600);
+
+    const blob = new Blob([qr], {
       type: "image/svg+xml;charset=utf-8",
     });
 
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
 
-    link.href = url;
-    link.download = `watch-save-${code}.svg`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    try {
+      const image = new Image();
 
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = reject;
+        image.src = url;
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 900;
+      canvas.height = 900;
+
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, 900, 900);
+      ctx.drawImage(image, 0, 0, 900, 900);
+
+      const qrImage = canvas.toDataURL("image/png");
+
+      // Large QR code, centred on the coupon
+      pdf.addImage(qrImage, "PNG", 65, 120, 80, 80);
+    } catch (error) {
+      alert("Could not generate the QR code.");
+      return;
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+
+    // Coupon number
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(14);
+    pdf.setTextColor(23, 51, 77);
+    pdf.text(code, 105, 215, { align: "center" });
+
+    // Demo notice
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    pdf.setTextColor(140, 150, 160);
+    pdf.text("ACADEMIC DEMO - NOT REDEEMABLE", 105, 235, {
+      align: "center",
+    });
+
+    // Download actual PDF
+    pdf.save(`watch-save-${code}.pdf`);
   }
 
   function toast(message) {
