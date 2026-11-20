@@ -180,7 +180,7 @@
     try {
       await loadCameraLibrary();
       scanner = new Html5Qrcode('reader', { formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13], verbose: false });
-      await scanner.start({ facingMode: 'environment' }, { fps: 12, qrbox: (w,h) => ({ width: Math.min(310, Math.max(120, w-40)), height: Math.min(145, Math.max(90, h-28)) }) }, decoded => {
+      await scanner.start({ facingMode: 'user' }, { fps: 12, qrbox: (w,h) => ({ width: Math.min(310, Math.max(120, w-40)), height: Math.min(145, Math.max(90, h-28)) }) }, decoded => {
         const now = Date.now(); if (now - lastScan < 1700) return;
         lastScan = now;
         if (addByBarcode(decoded)) {
